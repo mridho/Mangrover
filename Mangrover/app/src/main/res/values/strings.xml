@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Mangrover</string>
+    <string name="hello_world">Hello world, bluetooth style !!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_my_bluetooth">MyBluetoothActivity</string>
+    <string name="Send">Send</string>
+    <string name="Pair">Pair Devices</string>
+
+
+    <!--  Bluetooth Room Activity -->
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
+    <string name="button_back">Back</string>
+
+    <!-- Bluetooth Alert Dialog -->
+    <string name="alert_dialog_no_bt">Cannot use this application without bluetooth.</string>
+    <string name="alert_dialog_yes">Yes</string>
+    <string name="alert_dialog_no">No</string>
+    <string name="alert_dialog_warning_title">Warning</string>
+    <string name="alert_dialog_ok">Ok</string>
+    <string name="alert_dialog_turn_on_bt">This application needs Bluetooth. Do you want to turn it on?</string>
+    <string name="title_activity_bluetooth_room">bluetooth_room</string>
+
+</resources>
