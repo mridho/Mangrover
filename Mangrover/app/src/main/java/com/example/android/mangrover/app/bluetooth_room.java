@@ -1,3 +1,20 @@
+//Partially Copyrighted to  :
+/*
+ * Copyright (C) 2009 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.android.mangrover.app;
 
 import android.app.Activity;
@@ -21,10 +38,13 @@ import android.widget.TextView;
 import java.util.Set;
 
 
+
 public class bluetooth_room extends Activity {
 
+    private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
     // Debugging
-    private static final String TAG = "DeviceListActivity";
+    private static final String TAG = "bluetooth_room";
     private static final boolean D = true;
 
     // Return Intent extra
@@ -45,9 +65,7 @@ public class bluetooth_room extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_room);
 
-
-
-
+        //List of Active Button
         scanButton = (Button) findViewById(R.id.button_scan);
         Back = (Button) findViewById(R.id.button_back);
         createListeners();
@@ -92,8 +110,25 @@ public class bluetooth_room extends Activity {
             mPairedDevicesArrayAdapter.add(noDevices);
         }
 
+        //Connecting to Device
+        if (getConnectionState() == BluetoothSerialService.STATE_NONE) {
+            // Launch the DeviceListActivity/bluetooth_room to see devices and do scan
+            Intent serverIntent = new Intent(this, bluetooth_room.class);
+            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+        }
+        else
+        if (getConnectionState() == BluetoothSerialService.STATE_CONNECTED) {
+            mSerialService.stop();
+            mSerialService.start();
+        }
+
     }
 
+    public int getConnectionState() {
+        return mSerialService.getState();
+    }
+
+    private static BluetoothSerialService mSerialService = null;
 
     @Override
     protected void onDestroy() {
@@ -142,7 +177,7 @@ public class bluetooth_room extends Activity {
 
             String info = ((TextView) v).getText().toString();
 
-            if ( (info != noDevicesPaired)  &&  (info != noDevicesFound) ){
+            if ( (!info.equals(noDevicesPaired))  &&  (!info.equals(noDevicesFound)) ){
 
                 if (info.length() >= 17) {
                     // Get the device MAC address, which is the last 17 chars in the View
@@ -210,9 +245,55 @@ public class bluetooth_room extends Activity {
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 doDiscovery();
+                view.setVisibility(View.GONE);
             }
         });
 
+    }
+
+
+    /**
+     * Set to true to add debugging code and logging.
+     */
+    public static final boolean DEBUG = true;
+
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static final int REQUEST_ENABLE_BT = 2;
+
+    /**
+     * The tag we use when logging, so that our messages can be distinguished
+     * from other messages in the log. Public because it's used by several
+     * classes.
+     */
+    public static final String LOG_TAG = "Mangrover";
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(DEBUG) Log.d(LOG_TAG, "onActivityResult " + resultCode);
+        switch (requestCode) {
+
+           case REQUEST_CONNECT_DEVICE:
+
+                // When DeviceListActivity/bluetooth_room returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    // Get the device MAC address
+                    String address = data.getExtras()
+                            .getString(bluetooth_room.EXTRA_DEVICE_ADDRESS);
+                    // Get the BLuetoothDevice object
+                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                    // Attempt to connect to the device
+                    mSerialService.connect(device);
+                }
+                break;
+
+            /*case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode != Activity.RESULT_OK) {
+                    Log.d(LOG_TAG, "BT not enabled");
+
+                    finishDialogNoBluetooth();
+                }*/
+        }
     }
 
 //--------------------------------------------------------------------------------------------------
@@ -238,3 +319,5 @@ public class bluetooth_room extends Activity {
 //--------------------------------------------------------------------------------------------------
 
 }
+
+
