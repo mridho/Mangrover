@@ -1,7 +1,8 @@
 Code Credit :
-
- *  Aditya Widya Manggala(18111023)
- *  Muhammad Ridha (18111027)
+-------------
+Aplikasi ini dibuat oleh :
+ *  Aditya Widya Manggala (18111023)
+ *  Muhammad Ridha        (18111027)
   
   /*
  * Copyright (C) 2009 The Android Open Source Project
