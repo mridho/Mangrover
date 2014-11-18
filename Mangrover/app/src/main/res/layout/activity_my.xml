@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_main"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -14,9 +15,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/textView"
         android:textColor="#ff2d59ff"
-        android:layout_marginTop="94dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/Send"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="44dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -24,14 +25,19 @@
         android:text="@string/Send"
         android:id="@+id/Send"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="#ffc9cfcf"
+        android:textColor="#ff000000" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Pair"
-        android:id="@+id/bPair"
-        android:layout_above="@+id/Send"
+        android:text="@string/title_activity_DeviceListActivity"
+        android:id="@+id/device_list"
+        android:background="#ffc9cfcf"
+        android:textColor="#ff000000"
+        android:layout_marginTop="50dp"
+        android:layout_below="@+id/Send"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

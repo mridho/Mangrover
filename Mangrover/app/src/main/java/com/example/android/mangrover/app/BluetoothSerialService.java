@@ -1,25 +1,12 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.android.mangrover.app;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import java.io.IOException;
@@ -43,14 +30,13 @@ public class BluetoothSerialService {
     private static final UUID SerialPortServiceClass_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     // Member fields
-//    private final BluetoothAdapter mAdapter;
-//    private final Handler mHandler;
+    private final BluetoothAdapter mAdapter;
+    private final Handler mHandler;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
 
     private boolean mAllowInsecureConnections;
-
 //    private EmulatorView mEmulatorView;
     private Context mContext;
 
@@ -65,14 +51,14 @@ public class BluetoothSerialService {
      * @param context  The UI Activity Context
      * @param handler  A Handler to send messages back to the UI Activity
      */
-/*   public BluetoothSerialService(Context context, Handler handler, EmulatorView emulatorView) {
+    public BluetoothSerialService(Context context, Handler handler/*, EmulatorView emulatorView*/) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mHandler = handler;
-        mEmulatorView = emulatorView;
+//        mEmulatorView = emulatorView;
         mContext = context;
         mAllowInsecureConnections = true;
-    } */
+    }
 
     /**
      * Set the current state of the chat connection
@@ -83,7 +69,7 @@ public class BluetoothSerialService {
         mState = state;
 
         // Give the new state to the Handler so the UI Activity can update
-//        mHandler.obtainMessage(bluetooth_room.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+        mHandler.obtainMessage(MyActivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
 
     /**
@@ -159,11 +145,11 @@ public class BluetoothSerialService {
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
-//        Message msg = mHandler.obtainMessage(bluetooth_room.MESSAGE_DEVICE_NAME);
+        Message msg = mHandler.obtainMessage(MyActivity.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
-//        bundle.putString(bluetooth_room.DEVICE_NAME, device.getName());
-//        msg.setData(bundle);
-//        mHandler.sendMessage(msg);
+        bundle.putString(MyActivity.DEVICE_NAME, device.getName());
+        msg.setData(bundle);
+        mHandler.sendMessage(msg);
 
         setState(STATE_CONNECTED);
     }
@@ -212,11 +198,11 @@ public class BluetoothSerialService {
         setState(STATE_NONE);
 
         // Send a failure message back to the Activity
-/*        Message msg = mHandler.obtainMessage(bluetooth_room.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(MyActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(bluetooth_room.TOAST, mContext.getString(R.string.toast_unable_to_connect) );
+        bundle.putString(MyActivity.TOAST, mContext.getString(R.string.toast_unable_to_connect) );
         msg.setData(bundle);
-        mHandler.sendMessage(msg); */
+        mHandler.sendMessage(msg);
     }
 
     /**
@@ -225,12 +211,12 @@ public class BluetoothSerialService {
     private void connectionLost() {
         setState(STATE_NONE);
 
-/*        // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(bluetooth_room.MESSAGE_TOAST);
+        // Send a failure message back to the Activity
+        Message msg = mHandler.obtainMessage(MyActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(bluetooth_room.TOAST, mContext.getString(R.string.toast_connection_lost) );
+        bundle.putString(MyActivity.TOAST, mContext.getString(R.string.toast_connection_lost) );
         msg.setData(bundle);
-        mHandler.sendMessage(msg); */
+        mHandler.sendMessage(msg);
     }
 
     /**
@@ -269,7 +255,7 @@ public class BluetoothSerialService {
             setName("ConnectThread");
 
             // Always cancel discovery because it will slow down a connection
-//            mAdapter.cancelDiscovery();
+            mAdapter.cancelDiscovery();
 
             // Make a connection to the BluetoothSocket
             try {
@@ -335,7 +321,7 @@ public class BluetoothSerialService {
             mmOutStream = tmpOut;
         }
 
-        public void run() {
+/*        public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
             byte[] buffer = new byte[1024];
             int bytes;
@@ -346,16 +332,16 @@ public class BluetoothSerialService {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
 
-//                    mEmulatorView.write(buffer, bytes);
+                    mEmulatorView.write(buffer, bytes);
                     // Send the obtained bytes to the UI Activity
-                    //mHandler.obtainMessage(bluetooth_room.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                    //mHandler.obtainMessage(BlueTerm.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
                     break;
                 }
             }
-        }
+        }*/
 
         /**
          * Write to the connected OutStream.
@@ -366,8 +352,8 @@ public class BluetoothSerialService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-//                mHandler.obtainMessage(bluetooth_room.MESSAGE_WRITE, buffer.length, -1, buffer)
-//                        .sendToTarget();
+                mHandler.obtainMessage(MyActivity.MESSAGE_WRITE, buffer.length, -1, buffer)
+                        .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
             }
@@ -382,12 +368,13 @@ public class BluetoothSerialService {
         }
     }
 
-/*    public void setAllowInsecureConnections( boolean allowInsecureConnections ) {
+    public void setAllowInsecureConnections( boolean allowInsecureConnections ) {
         mAllowInsecureConnections = allowInsecureConnections;
     }
 
     public boolean getAllowInsecureConnections() {
         return mAllowInsecureConnections;
-    } */
+    }
 
 }
+
